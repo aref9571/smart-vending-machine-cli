@@ -1,5 +1,5 @@
 from typing import Optional, List
-
+from src.utils.change_calculator import calculate_change
 from src.models.product import Product
 from src.models.transaction import Transaction
 from src.models.machine_state import MachineState
@@ -17,8 +17,11 @@ class VendingService:
 
         if amount <= 0:
             raise ValueError("Amount must be positive")
+        coin = int(round(amount*100))
+        self.machine.cash_reserve[coin] = self.machine.cash_reserve.get(coin,0) + 1
 
         self.current_balance += amount
+        self.storage.save_machine(self.machine)
         return self.current_balance
 
     def return_money(self) -> float:
@@ -33,7 +36,7 @@ class VendingService:
     def get_product(self, product_id: str) -> Optional[Product]:
 
         for product in self.machine.products:
-            if product.id == product_id:
+            if product.id.startswith(product_id) :
                 return product
 
         return None
@@ -54,7 +57,9 @@ class VendingService:
         product.stock -= 1
 
         change = round(self.current_balance - product.price, 2)
-
+        change_coins = calculate_change(change , self.machine.cash_reserve)
+        for coin , qty in change_coins.items():
+            self.machine.cash_reserve[coin]  -= qty
         transaction = Transaction(
             product_id=product.id,
             product_name=product.name,

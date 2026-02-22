@@ -22,7 +22,7 @@ class MachineState:
     def from_dict(cls, data: dict):
         products = [Product.from_dict(p) for p in data.get("products", [])]
         transactions = [Transaction.from_dict(t) for t in data.get("transactions", [])]
-        cash = data.get("cash_reserve", {})
+        cash = {int(k):v for k,v in data.get("cash_reserve", {}).items()}
 
         return cls(
             products=products,
