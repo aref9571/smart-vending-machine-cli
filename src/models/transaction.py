@@ -1,18 +1,27 @@
-from dataclasses import dataclass , field
+from dataclasses import dataclass, field
 from datetime import datetime
 import uuid
-from itertools import product
 
 
 @dataclass
 class Transaction:
     product_id: str
-    product_name : str
-    price : float
-    paid : float
-    change : float
-    id : str = field(default_factory= lambda: str(uuid.uuid4()))
-    timestamp : str = field(default_factory= lambda : datetime.now().isoformat())
+    product_name: str
+    price: float
+    paid: float
+    change: float
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+
+    def __post_init__(self):
+        if self.price < 0:
+            raise ValueError("Invalid price")
+
+        if self.paid < 0:
+            raise ValueError("Invalid payment")
+
+        if self.change < 0:
+            raise ValueError("Invalid change")
 
     def to_dict(self) -> dict:
         return {
@@ -31,8 +40,8 @@ class Transaction:
             id=data["id"],
             product_id=data["product_id"],
             product_name=data["product_name"],
-            price=data["price"],
-            paid=data["paid"],
-            change=data["change"],
+            price=float(data["price"]),
+            paid=float(data["paid"]),
+            change=float(data["change"]),
             timestamp=data["timestamp"]
         )
