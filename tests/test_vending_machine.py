@@ -149,3 +149,25 @@ def test_transaction_count():
     assert service.total_transactions() == 1
 
     cleanup(temp)
+
+
+def test_failed_change_keeps_stock_and_balance():
+
+    service, temp = create_test_service()
+
+    p = service.add_product("Juice", 1.5, 3)
+
+    service.machine.cash_reserve = {}
+    service.insert_money(2)
+
+    try:
+        service.buy_product(p.id)
+        assert False, "Expected ValueError"
+    except ValueError as e:
+        assert str(e) == "Machine cannot provide change"
+
+    assert p.stock == 3
+    assert service.current_balance == 2
+    assert service.total_transactions() == 0
+
+    cleanup(temp)

@@ -54,12 +54,12 @@ class VendingService:
         if self.current_balance < product.price:
             raise ValueError("Insufficient balance")
 
-        product.stock -= 1
-
         change = round(self.current_balance - product.price, 2)
-        change_coins = calculate_change(change , self.machine.cash_reserve)
-        for coin , qty in change_coins.items():
-            self.machine.cash_reserve[coin]  -= qty
+        change_coins = calculate_change(change, self.machine.cash_reserve)
+
+        product.stock -= 1
+        for coin, qty in change_coins.items():
+            self.machine.cash_reserve[coin] -= qty
         transaction = Transaction(
             product_id=product.id,
             product_name=product.name,
