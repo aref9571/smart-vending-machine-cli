@@ -39,6 +39,10 @@ def insert_money(service: VendingService):
 def buy_product(service: VendingService):
     pid = input("Enter product id (first 8 chars): ").strip()
 
+    if not pid:
+        print("Product id cannot be empty")
+        return
+
     try:
         t = service.buy_product(pid)
 
@@ -72,13 +76,22 @@ def add_product(service: VendingService):
 
 
 def restock(service: VendingService):
-    pid = input("Product id: ")
-    amount = int(input("Amount: "))
+    pid = input("Product id: ").strip()
 
-    if service.restock_product(pid, amount):
-        print("Restocked.")
-    else:
-        print("Product not found.")
+    if not pid:
+        print("Product id cannot be empty")
+        return
+
+    try:
+        amount = int(input("Amount: "))
+
+        if service.restock_product(pid, amount):
+            print("Restocked.")
+        else:
+            print("Product not found.")
+
+    except ValueError as e:
+        print(e)
 
 
 def main():
