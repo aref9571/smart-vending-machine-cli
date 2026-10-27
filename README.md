@@ -32,6 +32,7 @@ smart-vending-machine-cli/
 │   └── utils/change_calculator.py    Change calculation from the coin reserve
 ├── tests/
 │   └── test_vending_machine.py
+├── conftest.py                  Lets pytest import the src package from the project root
 └── requirements.txt
 ```
 
